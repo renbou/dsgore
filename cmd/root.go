@@ -20,8 +20,8 @@ var (
 and prevent them from ending up in your commits.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			errChan := make(chan error, 100)
-			// Release the beast
-			slayer.Slay(directory, errChan)
+			// Release the beast (and maybe die if the beast is not strong enough...)
+			go slayer.Slay(directory, errChan)
 			// Log all errors after we started
 			for err := range errChan {
 				log.Error().Msg(err.Error())
