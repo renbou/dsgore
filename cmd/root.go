@@ -31,7 +31,7 @@ and prevent them from ending up in your commits.`,
 )
 
 func init() {
-	rootCmd.PersistentFlags().StringP("directory", "d", ".", "Directory where hell will break loose once the slayer is released.")
+	rootCmd.PersistentFlags().StringVarP(&directory, "directory", "d", ".", "Directory where hell will break loose once the slayer is released.")
 }
 
 func Execute() error {
