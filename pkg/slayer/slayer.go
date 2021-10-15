@@ -24,42 +24,31 @@ func (s slayError) Error() string {
 
 // The slayer handles concurrent processing of directories
 type slayer struct {
-	directory string
-	jobs      chan string
-	errChan   chan error
-	wg        sync.WaitGroup
-}
-
-func (s *slayer) path(p string) string {
-	return filepath.Join(s.directory, p)
+	jobs    chan string
+	errChan chan error
+	wg      sync.WaitGroup
 }
 
 func (s *slayer) writeError(path string, err error) {
 	if err != nil {
-		s.errChan <- slayError{
-			err:  err,
-			path: s.path(path),
-		}
+		s.errChan <- slayError{err, path}
 	}
 }
 
-func (s *slayer) readDir(path string) []os.FileInfo {
-	// If ye can't handle the directory, then just quit yer job lol
-	if file, err := os.Open(s.path(path)); err != nil {
-		s.writeError(path, err)
-		return nil
+func (s *slayer) readDir(path string) ([]os.FileInfo, error) {
+	if file, err := os.Open(path); err != nil {
+		return nil, err
 	} else if files, err := file.Readdir(0); err != nil {
-		s.writeError(path, err)
-		return nil
+		return nil, err
 	} else {
-		return files
+		return files, nil
 	}
 }
 
 func (s *slayer) handleFile(path string) {
 	// Eradicate the abomination
 	if filepath.Base(path) == PLAGUE_NAME {
-		s.writeError(path, os.Remove(s.path(path)))
+		s.writeError(path, os.Remove(path))
 	}
 }
 
@@ -67,8 +56,14 @@ func (s *slayer) process(path string) {
 	// Mark one job as done
 	defer s.wg.Done()
 
-	files := s.readDir(path)
+	files, err := s.readDir(path)
+	// If ye can't handle the directory, then just quit yer job lol
+	if err != nil {
+		s.writeError(path, err)
+		return
+	}
 
+	// Time to bring out da real gunz
 	for _, fileinfo := range files {
 		fullpath := filepath.Join(path, fileinfo.Name())
 		// Regular file encountered
@@ -80,13 +75,6 @@ func (s *slayer) process(path string) {
 	}
 }
 
-func (s *slayer) worker() {
-	for file := range s.jobs {
-		s.process(file)
-
-	}
-}
-
 func (s *slayer) newJob(path string) {
 	// So that we wait until the job is processed completely
 	s.wg.Add(1)
@@ -94,7 +82,13 @@ func (s *slayer) newJob(path string) {
 	select {
 	case s.jobs <- path: // Added new job to the queue
 	default: // Process ourselves
+		s.process(path)
+	}
+}
 
+func (s *slayer) worker() {
+	for file := range s.jobs {
+		s.process(file)
 	}
 }
 
