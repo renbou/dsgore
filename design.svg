@@ -10,6 +10,7 @@
         .design-is-my-passion > h1 {
           font-size: 100px;
           line-height: 200px;
+          margin: 0;
           letter-spacing: 5px;
           text-transform: uppercase;
           color: #660000;
