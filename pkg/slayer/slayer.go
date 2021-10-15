@@ -3,14 +3,11 @@ package slayer
 import (
 	"os"
 	"path/filepath"
-	"runtime"
 	"sync"
 )
 
 const PLAGUE_NAME = ".DS_Store"
-
-// Don't initialize more workers than available threads since its useless here
-var MAXWORKERS = runtime.GOMAXPROCS
+const MAXWORKERS = 100
 
 // Describes an error. We add the path since it is not included by default.
 type slayError struct {
@@ -30,7 +27,7 @@ type slayer struct {
 }
 
 func (s *slayer) writeError(path string, err error) {
-	if err != nil {
+	if err != nil && s.errChan != nil {
 		s.errChan <- slayError{err, path}
 	}
 }
@@ -94,6 +91,24 @@ func (s *slayer) worker() {
 
 // Concurrently remove all .DS_Store files from directory pointed to by directory
 // If errChan is not nil then errors are written to it
+// Thus if you want to call this synchronously, then make errChan nil
+// Otherwise call this as a goroutine and read all errors from errChan to wait for completion
 func Slay(directory string, errChan chan error) {
+	slayer := &slayer{
+		jobs:    make(chan string, MAXWORKERS),
+		errChan: errChan,
+	}
 
+	// Release the hunters
+	for i := 0; i < MAXWORKERS; i++ {
+		go slayer.worker()
+	}
+
+	// Begin the first job, which will quit once it processes the directory and leave only the workers
+	slayer.newJob(directory)
+	// Wait for the cleansing to be completed and close the channels,
+	// notifying the caller that we're done and closing the workers
+	slayer.wg.Wait()
+	close(slayer.jobs)
+	close(slayer.errChan)
 }
