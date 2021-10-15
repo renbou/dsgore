@@ -9,16 +9,6 @@ import (
 const PLAGUE_NAME = ".DS_Store"
 const MAXWORKERS = 100
 
-// Describes an error. We add the path since it is not included by default.
-type slayError struct {
-	err  error
-	path string
-}
-
-func (s slayError) Error() string {
-	return s.path + ": " + s.err.Error()
-}
-
 // The slayer handles concurrent processing of directories
 type slayer struct {
 	jobs    chan string
@@ -28,7 +18,7 @@ type slayer struct {
 
 func (s *slayer) writeError(path string, err error) {
 	if err != nil && s.errChan != nil {
-		s.errChan <- slayError{err, path}
+		s.errChan <- err
 	}
 }
 
@@ -36,8 +26,10 @@ func (s *slayer) readDir(path string) ([]os.FileInfo, error) {
 	if file, err := os.Open(path); err != nil {
 		return nil, err
 	} else if files, err := file.Readdir(0); err != nil {
+		_ = file.Close()
 		return nil, err
 	} else {
+		_ = file.Close()
 		return files, nil
 	}
 }

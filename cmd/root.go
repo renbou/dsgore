@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/renbou/dsgore/pkg/slayer"
@@ -32,6 +31,7 @@ and prevent them from ending up in your commits.`,
 
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&directory, "directory", "d", ".", "Directory where hell will break loose once the slayer is released.")
+	setupLogger()
 }
 
 func Execute() error {
@@ -41,8 +41,5 @@ func Execute() error {
 func setupLogger() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{
 		Out: os.Stderr,
-		FormatLevel: func(i interface{}) string {
-			return fmt.Sprintf("%s", i)
-		},
 	})
 }
