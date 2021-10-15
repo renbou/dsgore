@@ -3,14 +3,13 @@
     <div xmlns="http://www.w3.org/1999/xhtml">
       <style>
         .design-is-my-passion {
-          margin-top: auto;
-          margin-bottom: auto;
           text-align: center;
           font-family: system-ui, Helvetica, Arial, sans-serif;
         }
         
         .design-is-my-passion > h1 {
           font-size: 100px;
+          line-height: 200px;
           letter-spacing: 5px;
           text-transform: uppercase;
           color: #660000;
