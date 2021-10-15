@@ -3,6 +3,8 @@
     <div xmlns="http://www.w3.org/1999/xhtml">
       <style>
         .design-is-my-passion {
+          margin-top: auto;
+          margin-bottom: auto;
           text-align: center;
           font-family: system-ui, Helvetica, Arial, sans-serif;
         }
