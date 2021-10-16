@@ -45,4 +45,3 @@ dsgore --directory ~
 - Automatically write .DS_Store into the current repo's gitignore
 - Automatically setup a git hook which deletes .DS_Store before any pushes
 - Create a github action which launches this tool (e.g. to clean up pushes or pull requests)
-- Setup autorelease action
