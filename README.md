@@ -16,11 +16,22 @@ Install it for multiple usages with
     # Now launch it!
     dsgore
     ```
+  - curl:
+    ```bash
+    curl -s https://renbou.ru/static/get-dsgore.sh | bash
+    ```
 
 Launch it once with
   - Go:
     ```bash
     go run github.com/renbou/dsgore
+    ```
+  - curl:
+    ```bash
+    # If you want to cleanse the current directory
+    curl -s https://renbou.ru/static/run-dsgore.sh | bash
+    # If you want to clear some other directory or pass other args, then run it like this
+    curl -s https://renbou.ru/static/run-dsgore.sh | bash -s - -d {directory}
     ```
 
 ## Removing .DS_Store files
