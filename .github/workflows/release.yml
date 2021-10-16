@@ -1,5 +1,7 @@
 name: Build & attach release binaries
-on: release
+on:
+  release:
+    types: [published, edited]
 jobs:
   release:
     runs-on: ubuntu-latest
