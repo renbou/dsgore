@@ -1,0 +1,11 @@
+{
+  "name": "dsgore-scripts",
+  "version": "1.0.0",
+  "description": "Various js scripts used in the actions setup for dsgore",
+  "repository": "https://github.com/renbou/dsgore",
+  "author": "renbou",
+  "license": "WTFPL",
+  "dependencies": {
+    "@actions/github": "^5.0.0"
+  }
+}
