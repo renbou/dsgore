@@ -17,9 +17,14 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: "16"
+          cache: "yarn"
+      - name: Download NodeJS deps
+        working-directory: scripts/js
+        run: yarn install
       - name: Build dsgore
         run: bash scripts/bash/build.sh
       - name: Attach built binary to release
-        run: node scripts/js/attach-release.js
+        working-directory: scripts/js
+        run: node attach-release.js
         env:
           GHTOKEN: ${{ secrets.GITHUB_TOKEN }}
