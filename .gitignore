@@ -19,3 +19,5 @@
 
 # Bloody bastard
 .DS_Store
+
+dist/
